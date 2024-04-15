@@ -7,7 +7,7 @@ DATABASE_NAME = "LL_database"
 def run_query(query, parameters=(), is_select=False):
     try:
         conn = mysql.connector.connect(
-            host='localhost',        
+            host='localhost',        #potentially replace
             database=DATABASE_NAME,
             user='your_username',    # need to replace
             password='your_password' #need to replace
