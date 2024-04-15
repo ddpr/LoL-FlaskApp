@@ -1,0 +1,54 @@
+CREATE DATABASE IF NOT EXISTS LL_database;
+USE LL_database;
+
+CREATE TABLE IF NOT EXISTS CHAMPION (
+    cname VARCHAR(255) NOT NULL,
+    recommend_build_id INTEGER,
+    recommended_skillorder_id INTEGER,
+    recommended_runepage_id INTEGER,
+    PRIMARY KEY (cname)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS BUILD (
+    id INTEGER AUTO_INCREMENT,
+    game_count INTEGER,
+    win_count INTEGER,
+    item1 VARCHAR(255),
+    item2 VARCHAR(255),
+    item3 VARCHAR(255),
+    cname VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (cname) REFERENCES CHAMPION(cname) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS SKILL_ORDER (
+    id INTEGER AUTO_INCREMENT,
+    game_count INTEGER,
+    win_count INTEGER,
+    skill1 VARCHAR(255),
+    skill2 VARCHAR(255),
+    skill3 VARCHAR(255),
+    cname VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (cname) REFERENCES CHAMPION(cname) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS RUNE_PAGE (
+    id INTEGER AUTO_INCREMENT,
+    game_count INTEGER,
+    win_count INTEGER,
+    slot1 VARCHAR(255),
+    slot2 VARCHAR(255),
+    slot3 VARCHAR(255),
+    slot4 VARCHAR(255),
+    slot5 VARCHAR(255),
+    slot6 VARCHAR(255),
+    cname VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (cname) REFERENCES CHAMPION(cname) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS MATCHES (
+  id VARCHAR(255),
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
