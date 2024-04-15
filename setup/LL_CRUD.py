@@ -39,9 +39,9 @@ def delete_champion(cname):
     return run_query("DELETE FROM CHAMPION WHERE cname = ?", (cname,))
  
 # CRUD for BUILD
-def create_build(id, game_count, win_count, item1, item2, item3, cname):
-    return run_query("INSERT INTO BUILD VALUES (?, ?, ?, ?, ?, ?, ?)",
-                     (id, game_count, win_count, item1, item2, item3, cname))
+def create_build(game_count, win_count, item1, item2, item3, cname):
+    return run_query("INSERT INTO BUILD VALUES (?, ?, ?, ?, ?, ?)",
+                     (game_count, win_count, item1, item2, item3, cname))
  
 def read_build(id):
     return run_query("SELECT * FROM BUILD WHERE id = ?", (id,), is_select=True)
@@ -54,9 +54,9 @@ def delete_build(id):
     return run_query("DELETE FROM BUILD WHERE id = ?", (id,))
  
 # CRUD for SKILL_ORDER
-def create_skill_order(id, game_count, win_count, skill1, skill2, skill3, cname):
-    return run_query("INSERT INTO SKILL_ORDER VALUES (?, ?, ?, ?, ?, ?, ?)",
-                     (id, game_count, win_count, skill1, skill2, skill3, cname))
+def create_skill_order(game_count, win_count, skill1, skill2, skill3, cname):
+    return run_query("INSERT INTO SKILL_ORDER VALUES (?, ?, ?, ?, ?, ?)",
+                     (game_count, win_count, skill1, skill2, skill3, cname))
  
 def read_skill_order(id):
     return run_query("SELECT * FROM SKILL_ORDER WHERE id = ?", (id,), is_select=True)
@@ -69,9 +69,9 @@ def delete_skill_order(id):
     return run_query("DELETE FROM SKILL_ORDER WHERE id = ?", (id,))
  
 # CRUD for RUNE_PAGE
-def create_rune_page(id, game_count, win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname):
-    return run_query("INSERT INTO RUNE_PAGE VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                     (id, game_count, win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname))
+def create_rune_page(game_count, win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname):
+    return run_query("INSERT INTO RUNE_PAGE VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                     (game_count, win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname))
  
 def read_rune_page(id):
     return run_query("SELECT * FROM RUNE_PAGE WHERE id = ?", (id,), is_select=True)
