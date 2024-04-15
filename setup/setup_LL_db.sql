@@ -1,54 +1,57 @@
 CREATE DATABASE IF NOT EXISTS LL_database;
 USE LL_database;
 
+-- Create the CHAMPION table
 CREATE TABLE IF NOT EXISTS CHAMPION (
-    cname VARCHAR(255) NOT NULL,
+    cname TEXT NOT NULL PRIMARY KEY,
     recommend_build_id INTEGER,
     recommended_skillorder_id INTEGER,
     recommended_runepage_id INTEGER,
-    PRIMARY KEY (cname)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    FOREIGN KEY (recommend_build_id) REFERENCES BUILD(id),
+    FOREIGN KEY (recommended_skillorder_id) REFERENCES SKILL_ORDER(id),
+    FOREIGN KEY (recommended_runepage_id) REFERENCES RUNE_PAGE(id)
+);
 
+-- Create the BUILD table
 CREATE TABLE IF NOT EXISTS BUILD (
-    id INTEGER AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_count INTEGER,
     win_count INTEGER,
-    item1 VARCHAR(255),
-    item2 VARCHAR(255),
-    item3 VARCHAR(255),
-    cname VARCHAR(255),
-    PRIMARY KEY (id),
+    item1 TEXT,
+    item2 TEXT,
+    item3 TEXT,
+    cname TEXT,
     FOREIGN KEY (cname) REFERENCES CHAMPION(cname) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
+-- Create the SKILL_ORDER table
 CREATE TABLE IF NOT EXISTS SKILL_ORDER (
-    id INTEGER AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_count INTEGER,
     win_count INTEGER,
-    skill1 VARCHAR(255),
-    skill2 VARCHAR(255),
-    skill3 VARCHAR(255),
-    cname VARCHAR(255),
-    PRIMARY KEY (id),
+    skill1 TEXT,
+    skill2 TEXT,
+    skill3 TEXT,
+    cname TEXT,
     FOREIGN KEY (cname) REFERENCES CHAMPION(cname) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
+-- Create the RUNE_PAGE table
 CREATE TABLE IF NOT EXISTS RUNE_PAGE (
-    id INTEGER AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     game_count INTEGER,
     win_count INTEGER,
-    slot1 VARCHAR(255),
-    slot2 VARCHAR(255),
-    slot3 VARCHAR(255),
-    slot4 VARCHAR(255),
-    slot5 VARCHAR(255),
-    slot6 VARCHAR(255),
-    cname VARCHAR(255),
-    PRIMARY KEY (id),
+    slot1 TEXT,
+    slot2 TEXT,
+    slot3 TEXT,
+    slot4 TEXT,
+    slot5 TEXT,
+    slot6 TEXT,
+    cname TEXT,
     FOREIGN KEY (cname) REFERENCES CHAMPION(cname) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
+-- Create the MATCHES table
 CREATE TABLE IF NOT EXISTS MATCHES (
-  id VARCHAR(255),
-  PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    id TEXT PRIMARY KEY
+);
