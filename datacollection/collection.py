@@ -52,11 +52,13 @@ def collect_from_matchlist(matchlist):
                         items_by_participant[champions_by_participant[participant_id]] = []
                     item_id = event['itemId']
                     should_append = False
+                    itemName = ''
                     for row in data:
                         if item_id == row['id'] and row['priceTotal'] > 2000:
                             should_append = True
+                            itemName = row['name']
                     if should_append and len(items_by_participant[champions_by_participant[participant_id]]) < 3:
-                        items_by_participant[champions_by_participant[participant_id]].append(item_id)
+                        items_by_participant[champions_by_participant[participant_id]].append(itemName)
 
         # Store the item purchase data for this match
         item_purchases_by_match[match_id] = items_by_participant
