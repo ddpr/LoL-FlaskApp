@@ -62,7 +62,11 @@ def get_items_and_skillorder(timeline, champions_by_participant):
                 item_name = ''
                 # ensure item is a full item
                 for row in item_json:
-                    if item_id == row['id'] and row['priceTotal'] > 2000:
+                    is_boot = False
+                    for category in row['categories']:
+                        if category == "Boots" and row['name'] != "Boots":
+                            is_boot = True
+                    if item_id == row['id'] and (row['priceTotal'] > 2000 or is_boot):
                         should_append = True
                         item_name = row['name']
                 if 'build' not in build_by_participant[participant_champion]:
@@ -105,7 +109,6 @@ def get_runes(match_details, build_by_participant, champions_by_participant):
         for i in range(0, 2):
             rune_id = styles[SECONDARY_STYLE]['selections'][i]['perk']
             tree_id = styles[SECONDARY_STYLE]['style']
-            print(rune_id)
             for row in runes_json:
                 if row['id'] != tree_id:
                     continue
@@ -128,10 +131,13 @@ def collect_from_matchlist(matchlist):
         build_by_participant = get_items_and_skillorder(timeline, champions_by_participant)
         get_runes(match_details, build_by_participant, champions_by_participant)
         # Store the item purchase data for this match
-        print(build_by_participant)
+        for champion in build_by_participant:
+            item_build = build_by_participant[champion]['build']
+            print(item_build)
+        #print(build_by_participant)
         item_purchases_by_match[match_id] = build_by_participant
-    print(len(item_purchases_by_match))
-    print(item_purchases_by_match)
+    #print(len(item_purchases_by_match))
+    #print(item_purchases_by_match)
     collect_from_matchlist(get_origin_matchlist())
 
 
