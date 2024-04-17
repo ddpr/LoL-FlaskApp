@@ -1,10 +1,13 @@
 import json
 import random
 
+
 from riotwatcher import LolWatcher
+from CRUD import (
+    update_build, update_skill_order, update_rune_page, create_rune_page, create_build, create_match, create_champion,
+    read_build, read_skill_order, read_rune_page, create_skill_order)
 
 REGION = 'NA1'
-ROUTING_VALUE = 'AMERICAS'
 
 
 # Gets API key from a file in .gitignore, hiding the key.
@@ -36,14 +39,14 @@ def get_origin_matchlist():
         if match_details['info']['queueId'] == 420:
             return [matchlistOfCrawlStart, puuidOfCrawlStart]
 
+
 def get_participant_champions(match_details):
     champions_by_participant = {}
     for participant in match_details['info']['participants']:
         participant_id = participant['participantId']
         champions_by_participant[participant_id] = participant['championName']
-        #participant_champion = 0
-        #participant_champion = participant['championName']
     return champions_by_participant
+
 
 def get_items_and_skillorder(timeline, champions_by_participant):
     build_by_participant = {}
@@ -86,10 +89,13 @@ def get_items_and_skillorder(timeline, champions_by_participant):
                     build_by_participant[champions_by_participant[participant_id]]['skill_order'].append(skill_slot)
     return build_by_participant
 
+
 def get_runes(match_details, build_by_participant, champions_by_participant):
     for participant in match_details['info']['participants']:
         participant_id = participant['participantId']
         participant_champion = champions_by_participant[participant_id]
+        if participant_champion not in build_by_participant:
+            build_by_participant[champions_by_participant[participant_id]] = {}
         build_by_participant[participant_champion]['runes'] = []
         styles = participant['perks']['styles']
         PRIMARY_STYLE = 0
@@ -98,7 +104,6 @@ def get_runes(match_details, build_by_participant, champions_by_participant):
         for i in range(0, 4):
             rune_id = styles[PRIMARY_STYLE]['selections'][i]['perk']
             tree_id = styles[PRIMARY_STYLE]['style']
-            #print(rune_id)
             for row in runes_json:
                 if row['id'] != tree_id:
                     continue
@@ -119,8 +124,45 @@ def get_runes(match_details, build_by_participant, champions_by_participant):
             build_by_participant[participant_champion]['runes'].append(rune_name)
 
 
+def get_win_loss(match_details, build_by_participant, champions_by_participant):
+    for participant in match_details['info']['participants']:
+        participant_id = participant['participantId']
+        participant_champion = champions_by_participant[participant_id]
+        if participant['win'] == False:
+            winLoss = 0
+        elif participant['win'] == True:
+            winLoss = 1
+        build_by_participant[participant_champion]['winloss'] = winLoss
 
-def collect_from_matchlist(matchlist):
+
+def update_database(build_by_champion):
+    for champion in build_by_champion:
+        if 'winloss' not in build_by_champion[champion] or 'build' not in build_by_champion[champion] or 'runes' not in build_by_champion[champion] or 'skill_order' not in build_by_champion[champion]:
+            continue
+        winLoss = build_by_champion[champion]['winloss']
+        item_build = build_by_champion[champion]['build']
+        rune_page = build_by_champion[champion]['runes']
+        skill_order = build_by_champion[champion]['skill_order']
+        if len(item_build) == 3:
+            if len(read_build(item_build[0], item_build[1], item_build[2], champion)) == 0:
+                create_build(winLoss, item_build[0], item_build[1], item_build[2], champion)
+            else:
+                update_build(winLoss, item_build[0], item_build[1], item_build[2], champion)
+        if len(read_rune_page(rune_page[0], rune_page[1], rune_page[2], rune_page[3], rune_page[4], rune_page[5],
+                              champion)) == 0:
+            create_rune_page(winLoss, rune_page[0], rune_page[1], rune_page[2], rune_page[3], rune_page[4],
+                             rune_page[5], champion)
+        else:
+            update_rune_page(winLoss, rune_page[0], rune_page[1], rune_page[2], rune_page[3], rune_page[4],
+                             rune_page[5], champion)
+        if len(skill_order) == 3:
+            if len(read_skill_order(skill_order[0], skill_order[1], skill_order[2], champion)) == 0:
+                create_skill_order(winLoss, skill_order[0], skill_order[1], skill_order[2], champion)
+            else:
+                update_skill_order(winLoss, skill_order[0], skill_order[1], skill_order[2], champion)
+
+
+def collect_from_matchlist(matchlist, counter):
     item_purchases_by_match = {}
     for match_id in matchlist[0]:
         match_details = api.match.by_id(match_id=match_id, region='AMERICAS')
@@ -130,15 +172,18 @@ def collect_from_matchlist(matchlist):
         timeline = api.match.timeline_by_match(match_id=match_id, region='AMERICAS')
         build_by_participant = get_items_and_skillorder(timeline, champions_by_participant)
         get_runes(match_details, build_by_participant, champions_by_participant)
-        # Store the item purchase data for this match
-        for champion in build_by_participant:
-            item_build = build_by_participant[champion]['build']
-            print(item_build)
-        #print(build_by_participant)
-        item_purchases_by_match[match_id] = build_by_participant
-    #print(len(item_purchases_by_match))
-    #print(item_purchases_by_match)
-    collect_from_matchlist(get_origin_matchlist())
+        get_win_loss(match_details, build_by_participant, champions_by_participant)
+        update_database(build_by_participant)
+
+        counter += 1
+        print(counter, "GAME PROCESSED")
+    collect_from_matchlist(get_origin_matchlist(), counter)
 
 
-collect_from_matchlist(get_origin_matchlist())
+counter = 0
+try:
+    collect_from_matchlist(get_origin_matchlist(), counter)
+except Exception as e:
+    print("Error:", e)
+    collect_from_matchlist(get_origin_matchlist(), counter)
+
