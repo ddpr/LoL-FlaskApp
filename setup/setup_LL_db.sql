@@ -74,7 +74,7 @@ try:
         # Create MATCHES table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS MATCHES (
-            id TEXT PRIMARY KEY
+            id VARCHAR(255) NOT NULL PRIMARY KEY
         );
         """)
 
