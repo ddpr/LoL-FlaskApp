@@ -181,9 +181,6 @@ def collect_from_matchlist(matchlist, counter):
 
 
 counter = 0
-try:
-    collect_from_matchlist(get_origin_matchlist(), counter)
-except Exception as e:
-    print("Error:", e)
-    collect_from_matchlist(get_origin_matchlist(), counter)
+
+collect_from_matchlist(get_origin_matchlist(), counter)
 
