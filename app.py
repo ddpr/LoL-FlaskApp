@@ -52,25 +52,38 @@ def index():
 def champsearch():
     if request.method =='POST':
         cn = request.form['champname']
-        existquery = """
-        SELECT cname FROM champion WHERE cname = %s
-        """
-        exist = [champ ['cname'] for champ in LL_CRUD.run_query(existquery,cn,True)]
-        print(exist, flush=True) #Debug 
-        if not exist:
-            inserquery = """
-            INSERT INTO champion (cname, recommend_build_id, recommended_skillorder_id, recommended_runepage_id) VALUES (%s,%s,%s,%s)
+
+        #Checking if champion is a valid champ at all (exist in build table)
+        validchampquery = """
+                    SELECT EXISTS (SELECT cname FROM build WHERE cname = %s) AS result
+                    """
+        validchamp = LL_CRUD.run_query(validchampquery,cn,True)[0]['result']
+        print(validchamp, flush=True) #Debug
+        
+        #If champion is valid, check if its in the champion table, if not in champion table then add it along with it's recs
+        if validchamp:
+            existquery = """
+            SELECT cname FROM champion WHERE cname = %s
             """
-            recbuild, recskill, recrune = getrecs(cn)
-            LL_CRUD.run_query(inserquery,(cn,recbuild,recskill,recrune),False)
-            print("Inserted:", cn,recbuild,recskill,recrune,"into champion table",  flush=True) #Debug
+            exist = [champ ['cname'] for champ in LL_CRUD.run_query(existquery,cn,True)]
+            print(exist, flush=True) #Debug 
+            if not exist:
+                inserquery = """
+                INSERT INTO champion (cname, recommend_build_id, recommended_skillorder_id, recommended_runepage_id) VALUES (%s,%s,%s,%s)
+                """
+                recbuild, recskill, recrune = getrecs(cn)
+                LL_CRUD.run_query(inserquery,(cn,recbuild,recskill,recrune),False)
+                print("Inserted:", cn,recbuild,recskill,recrune,"into champion table",  flush=True) #Debug
 
-        query = """
-        SELECT DISTINCT cname FROM champion WHERE cname = %s
-        """
-        champname = [champ ['cname'] for champ in LL_CRUD.run_query(query,cn,True)]
+            query = """
+            SELECT DISTINCT cname FROM champion WHERE cname = %s
+            """
+            champname = LL_CRUD.run_query(query,cn,True)[0]['cname']
+            print(champname,flush=True)
 
-        return render_template('champbuilds.html', champname = champname)
+            return render_template('champbuilds.html', champname = champname)
+        else:
+            return render_template("index.html") #Provide an error message of some sort
     else:
         return render_template("index.html")
 
