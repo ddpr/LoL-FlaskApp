@@ -1,9 +1,42 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="../static/champpage.css">
     </head>
     <body>
         <h1>Builds for {{champname}}</h1>
-        
+        <table>
+            <tr>
+                <th>Skill 1</th>
+                <th>Skill 2</th>
+                <th>Skill 3</th>
+                <th>Item 1</th>
+                <th>Item 2</th>
+                <th>Item 3</th>
+                <th>Rune 1</th>
+                <th>Rune 2</th>
+                <th>Rune 3</th>
+                <th>Rune 4</th>
+                <th>Rune 5</th>
+                <th>Rune 6</th>
+            </tr>
+            {%for b in build %}
+            <tr>
+                <td>{{b.skill1}}</td>
+                <td>{{b.skill2}}</td>
+                <td>{{b.skill3}}</td>
+                <td>{{b.item1}}</td>
+                <td>{{b.item2}}</td>
+                <td>{{b.item3}}</td>
+                <td>{{b.slot1}}</td>
+                <td>{{b.slot2}}</td>
+                <td>{{b.slot3}}</td>
+                <td>{{b.slot4}}</td>
+                <td>{{b.slot5}}</td>
+                <td>{{b.slot6}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
     </body>
 </html>

@@ -31,22 +31,14 @@ def getrecs(cname):
     recskill = LL_CRUD.run_query(skillquery,cname,True)
     print(recbuild,flush=True)  #Debug
     print(recbuild[0]["id"],flush=True) #Debug
-    #recbuild = LL_CRUD.run_query(buildquery2,is_select=True)
+    print("Recskills:", recskill,flush=True)  #Debug
+    print("Recrune:", recrune,flush=True)  #Debug
+
     return recbuild[0]["id"],recskill[0]["id"],recrune[0]["id"]
     
 @app.route('/')
 def index():
     return render_template("index.html")
-
-# @app.route('/addchampion')
-# def addchampion():
-#     if request.method == 'POST':
-#         cname = request.form['cname']
-#         try:
-#             LL_CRUD.create_champion(cname,None,None,None)
-#         except:
-#             print("Failed")
-#     return render_template('addchampion')
 
 @app.route('/champion', methods = ['GET', 'POST'])
 def champsearch():
@@ -81,7 +73,18 @@ def champsearch():
             champname = LL_CRUD.run_query(query,cn,True)[0]['cname']
             print(champname,flush=True)
 
-            return render_template('champbuilds.html', champname = champname)
+            buildquery ="""
+                        SELECT item1, item2, item3,skill1, skill2, skill3, slot1, slot2, slot3, slot4, slot5, slot6 
+                        FROM champion 
+                        LEFT JOIN build ON champion.recommend_build_id = build.id
+                        LEFT JOIN skill_order ON champion.recommended_skillorder_id = skill_order.id
+                        LEFT JOIN rune_page ON champion.recommended_runepage_id = rune_page.id 
+                        WHERE champion.cname = %s
+                        """
+            build = LL_CRUD.run_query(buildquery,cn,True)
+
+            return render_template('champbuilds.html', champname = champname, build = build)
+        
         else:
             return render_template("index.html") #Provide an error message of some sort
     else:
