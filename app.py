@@ -1,8 +1,6 @@
 from flask import Flask, render_template, flash, request, redirect, url_for
 import os
 from werkzeug.utils import secure_filename
-import pymysql
-from pymysql import err
 import datetime
 from setup import LL_CRUD
 
@@ -39,6 +37,31 @@ def getrecs(cname):
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route('/mymatches')
+def mymatches():
+    return render_template("mymatches.html")
+
+@app.route('/editrunes')
+def editrunes():
+    return render_template("managerunepage.html")
+
+@app.route('/editskills')
+def editskills():
+    return render_template("manageskillorder.html")
+
+@app.route('/searchbuilds', methods = ['GET','POST'])
+def searchbuilds():
+    cn = request.form['champname']
+    buildquery = """
+                SELECT id, item1, item2, item3, win_count, game_count from build WHERE cname = %s
+                """
+    builds = LL_CRUD.run_query(buildquery,cn,True)
+    return render_template('managebuilds.html',champion = cn, builds = builds)
+
+@app.route('/editbuilds')
+def editbuilds():
+    return render_template("managebuilds.html")
 
 @app.route('/champion', methods = ['GET', 'POST'])
 def champsearch():

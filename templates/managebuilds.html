@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/list.css"
+    <title>Manage Builds</title>
+  </head>
+  <body>
+    <main>
+        <h1>Manage Builds</h1> 
+        <br>
+        <h2>Search Builds By Champions</h2> 
+        <form action ="/searchbuilds" method = "post" enctype="multipart/form-data">
+            <input type = "text" name ="champname">
+            <input type ="submit" value = "Search">
+        {%if champion%}
+        <h3>Entries for {{champion}}</h3>
+        <table>
+          <th>Build ID</th>
+          <th>Item 1</th>
+          <th>Item 2</th>
+          <th>Item 3</th>
+          <th>Wins</th>
+          <th>Total Games</th>
+          <th>Actions</th>
+            {%for build in builds%}
+            <tr>
+              <td>{{build.id}}</td>
+              <td>{{build.item1}}</td>
+              <td>{{build.item2}}</td>
+              <td>{{build.item3}}</td>
+              <td>{{build.win_count}}</td>
+              <td>{{build.game_count}}</td>
+              <td>
+                
+              </td>
+            </tr>
+            {%endfor%}
+          {%endif%}
+        </table>
+    </main>
+  </body>
+</html>
