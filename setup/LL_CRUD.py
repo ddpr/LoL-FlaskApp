@@ -56,9 +56,9 @@ def delete_champion(cname):
 def create_build(win_count, item1, item2, item3, cname):
     query = """
     INSERT INTO BUILD (game_count, win_count, item1, item2, item3, cname)
-    VALUES (1, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """
-    return run_query(query, (win_count, item1, item2, item3, cname))
+    return run_query(query, (win_count,win_count, item1, item2, item3, cname))
 
 def read_build(item1, item2, item3, cname):
     query = """
@@ -88,9 +88,9 @@ def delete_build(item1, item2, item3, cname):
 def create_skill_order(win_count, skill1, skill2, skill3, cname):
     query = """
     INSERT INTO SKILL_ORDER (game_count, win_count, skill1, skill2, skill3, cname)
-    VALUES (1, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """
-    return run_query(query, (win_count, skill1, skill2, skill3, cname))
+    return run_query(query, (win_count,win_count, skill1, skill2, skill3, cname))
 
 def read_skill_order(skill1, skill2, skill3, cname):
     query = """
@@ -120,9 +120,9 @@ def delete_skill_order(skill1, skill2, skill3, cname):
 def create_rune_page(win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname):
     query = """
     INSERT INTO RUNE_PAGE (game_count, win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname)
-    VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    return run_query(query, (win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname))
+    return run_query(query, (win_count,win_count, slot1, slot2, slot3, slot4, slot5, slot6, cname))
 
 def read_rune_page(slot1, slot2, slot3, slot4, slot5, slot6, cname):
     query = """
