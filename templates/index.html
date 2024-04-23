@@ -3,14 +3,13 @@
     <head>
     </head>
     <body>
-        <a href="{{ url_for('mymatches') }}">My Matches</a>
         <a href="{{ url_for('editrunes') }}">EDIT RUNE PAGES</a>
         <a href="{{ url_for('editskills') }}">EDIT SKILL ORDERS</a>
-        <a href="{{ url_for('editbuilds') }}">EDIT BUILDS</a>
+        <a href="{{ url_for('managebuild') }}">EDIT BUILDS</a>
 
         
         <h1 id="Page Header">Search A Champion</h1>
-        <form action ="/champion" method = "post" enctype="multipart/form-data">
+        <form action ="/champion" method = "post" enctype="text/plain">
             <input type = "text" name ="champname">
             <input type ="submit" value = "Search">
         </form>

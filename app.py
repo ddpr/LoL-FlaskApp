@@ -38,10 +38,6 @@ def getrecs(cname):
 def index():
     return render_template("index.html")
 
-@app.route('/mymatches')
-def mymatches():
-    return render_template("mymatches.html")
-
 @app.route('/editrunes')
 def editrunes():
     return render_template("managerunepage.html")
@@ -49,6 +45,13 @@ def editrunes():
 @app.route('/editskills')
 def editskills():
     return render_template("manageskillorder.html")
+
+
+###Endpoints for managing builds (CRUD Operations)
+ 
+@app.route('/managebuild')
+def managebuild():
+    return render_template("managebuilds.html")
 
 @app.route('/searchbuilds', methods = ['GET','POST'])
 def searchbuilds():
@@ -59,9 +62,38 @@ def searchbuilds():
     builds = LL_CRUD.run_query(buildquery,cn,True)
     return render_template('managebuilds.html',champion = cn, builds = builds)
 
-@app.route('/editbuilds')
-def editbuilds():
-    return render_template("managebuilds.html")
+@app.route('/addbuild', methods = ('GET', 'POST'))
+def addbuild():
+    if request.method == 'POST':
+        cn = request.form['champname']
+        item1 = request.form['item1']
+        item2 = request.form['item2']
+        item3 = request.form['item3']
+        win_count = request.form['win_count']
+        LL_CRUD.create_build(win_count,item1,item2,item3,cn)
+        return render_template('managebuilds.html')
+    return render_template('addbuild.html')
+
+@app.route('/deletebuild/<int:id>',methods=('POST',))
+def deletebuild(id):
+    query = """
+            SELECT item1, item2, item3, win_count, cname FROM build WHERE id = %s
+            """
+    result = LL_CRUD.run_query(query,id,True)
+    item1 = result[0]['item1']
+    item2 = result[0]['item2']
+    item3 = result[0]['item3']
+    win_count = result[0]['win_count']
+    cname = result[0]['cname']
+
+    LL_CRUD.delete_build(item1,item2,item3,cname)
+
+    buildquery = """
+                SELECT id, item1, item2, item3, win_count, game_count from build WHERE cname = %s
+                """
+    builds = LL_CRUD.run_query(buildquery,cname,True)
+
+    return render_template('managebuilds.html',champion = cname, builds = builds)
 
 @app.route('/champion', methods = ['GET', 'POST'])
 def champsearch():

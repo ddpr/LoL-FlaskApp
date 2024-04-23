@@ -3,13 +3,21 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/list.css"
+    <link rel="stylesheet" href="../static/list.css">
+    {%if champion%}
+    <title>Manage {{champion}} Builds</title>
+    {%else%}
     <title>Manage Builds</title>
+    {%endif%}
   </head>
   <body>
     <main>
+        <a href="/">Home</a>
         <h1>Manage Builds</h1> 
         <br>
+        <form action="/addbuild" method ="get" enctype="text/plain">
+          <input type="submit" value = "Add New Build Entry">
+        </form>
         <h2>Search Builds By Champions</h2> 
         <form action ="/searchbuilds" method = "post" enctype="multipart/form-data">
             <input type = "text" name ="champname">
@@ -33,7 +41,11 @@
               <td>{{build.win_count}}</td>
               <td>{{build.game_count}}</td>
               <td>
-                
+                <a href="/editbuild/{{ build.id }}">Edit</a>
+                <form action="/deletebuild/{{ build.id }}" method="post" style="display: inline;">
+                    <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this build entry?');">
+                </form>
+            </td>
               </td>
             </tr>
             {%endfor%}
