@@ -138,13 +138,13 @@ def update_rune_page(winOrLoss, slot1, slot2, slot3, slot4, slot5, slot6, cname)
     if result:
         current_wins, current_games = result[0]['win_count'], result[0]['game_count']
         query = """
-        UPDATE RUNE_PAGE SET game_count = %s, win_count = %s WHERE slot1 = %s, slot2 = %s, slot3 = %s, slot4 = %s, slot5 = %s, slot6 = %s, cname = %s
+        UPDATE RUNE_PAGE SET game_count = %s, win_count = %s WHERE slot1 = %s AND slot2 = %s AND slot3 = %s AND slot4 = %s AND slot5 = %s AND slot6 = %s AND cname = %s
         """
         return run_query(query, (current_games + 1, current_wins + winOrLoss, slot1, slot2, slot3, slot4, slot5, slot6, cname))
 
 def delete_rune_page(slot1, slot2, slot3, slot4, slot5, slot6, cname):
     query = """
-    DELETE FROM RUNE_PAGE WHERE slot1 = %s, slot2 = %s, slot3 = %s, slot4 = %s, slot5 = %s, slot6 = %s, cname = %s
+    DELETE FROM RUNE_PAGE WHERE slot1 = %s AND slot2 = %s AND slot3 = %s AND slot4 = %s AND slot5 = %s AND slot6 = %s AND cname = %s
     """
     return run_query(query, (slot1, slot2, slot3, slot4, slot5, slot6, cname))
 
