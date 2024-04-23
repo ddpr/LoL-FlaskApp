@@ -195,7 +195,7 @@ def addbuild():
         win_count = int(request.form['win_count'])
         updatecheck = LL_CRUD.read_build(item1,item2,item3,cn)
         if len(updatecheck) == 0:
-            LL_CRUD.create_build(item1,item2,item3,cn)
+            LL_CRUD.create_build(win_count,item1,item2,item3,cn)
         else:
             LL_CRUD.update_build(win_count,item1,item2,item3,cn)
         return render_template('managebuilds.html')
