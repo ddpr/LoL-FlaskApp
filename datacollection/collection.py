@@ -1,6 +1,6 @@
 import json
 import random
-
+import time
 
 from riotwatcher import LolWatcher
 from CRUD import (
@@ -144,8 +144,11 @@ def update_database(build_by_champion):
         rune_page = build_by_champion[champion]['runes']
         skill_order = build_by_champion[champion]['skill_order']
         if len(item_build) == 3:
+            # read_build returns a tuple, if len(tuple) = 0 that build does not exist
+            # create build instead of update
             if len(read_build(item_build[0], item_build[1], item_build[2], champion)) == 0:
                 create_build(winLoss, item_build[0], item_build[1], item_build[2], champion)
+            # if build does not exist, update it
             else:
                 update_build(winLoss, item_build[0], item_build[1], item_build[2], champion)
         if len(read_rune_page(rune_page[0], rune_page[1], rune_page[2], rune_page[3], rune_page[4], rune_page[5],
@@ -182,5 +185,11 @@ def collect_from_matchlist(matchlist, counter):
 
 counter = 0
 
-collect_from_matchlist(get_origin_matchlist(), counter)
+try:
+    collect_from_matchlist(get_origin_matchlist(), counter)
+except:
+    print("ERROR ENCOUNTERED. SLEEPING FOR 500 SECONDS")
+    time.sleep(500)
+    collect_from_matchlist(get_origin_matchlist(), counter)
+
 
