@@ -36,7 +36,13 @@ def getrecs(cname):
     
 @app.route('/')
 def index():
-    return render_template("index.html")
+    query = """
+        SELECT COUNT(id)
+        FROM build
+    """
+    result = LL_CRUD.run_query(query,is_select=True)
+    buildcount = result[0]['COUNT(id)']
+    return render_template("index.html", buildcount = buildcount)
 
 ###Endpoints for managing rune pages (CRUD Operations)
 
@@ -175,6 +181,23 @@ def deleteskillorder(id):
 @app.route('/managebuild')
 def managebuild():
     return render_template("managebuilds.html")
+
+# @app.route('/searchitemfreq')
+# def searchitemfreq():
+#     print("klasdjaskdjaskdljas",flush=True)
+#     print("in item frequency func",flush=True)
+#     itemname = request.form['itemname']
+#     cn = request.form['champname']
+#     query = """
+#             SELECT COUNT(id)
+#             FROM build
+#             WHERE (item1 = %s OR item2 = %s OR item3 = %s) AND cname = %s
+#             """
+#     result = LL_CRUD.run_query(query,itemname,itemname,itemname,cn,is_select=True)
+#     itemcount = result[0]['COUNT(id)']
+#     print("itemcount",itemcount,flush=True)
+#     return render_template("managebuilds.html", champion = cn, itemname = itemname,itemcount = itemcount)
+#     #return render_template("managebuilds.html")
 
 @app.route('/searchbuilds', methods = ['GET','POST'])
 def searchbuilds():

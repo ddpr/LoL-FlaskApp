@@ -6,7 +6,7 @@
         <a href="{{ url_for('managerunepages') }}">EDIT RUNE PAGES</a>
         <a href="{{ url_for('manageskillorders') }}">EDIT SKILL ORDERS</a>
         <a href="{{ url_for('managebuild') }}">EDIT BUILDS</a>
-
+        <h2> Amount of item builds in database: {{buildcount}}</h2>
         
         <h1 id="Page Header">Search A Champion</h1>
         <form action ="/champion" method = "post" enctype="multipart/form-data">
