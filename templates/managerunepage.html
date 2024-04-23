@@ -16,7 +16,7 @@
         <h1>Manage Rune Page Entries</h1> 
         <br>
         <form action="/addrunepage" method ="get" enctype="text/plain">
-          <input type="submit" value = "Add New Rune Page Entry">
+          <input type="submit" value = "Add New/Edit Rune Page Entry">
         </form>
         <h2>Search Rune Pages By Champions</h2> 
         <form action ="/searchrunepages" method = "post" enctype="multipart/form-data">
@@ -47,7 +47,9 @@
               <td>{{entry.win_count}}</td>
               <td>{{entry.game_count}}</td>
               <td>
-                <a href="/editrunepages/{{ entry.id }}">Edit</a>
+                <form action="/editrunepage/{{ entry.id }}" method = "get" style="display: inline;">
+                  <input type ="submit" value ="Edit">
+                  </form>
                 <form action="/deleterunepage/{{ entry.id }}" method="post" style="display: inline;">
                     <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this rune page entry?');">
                 </form>

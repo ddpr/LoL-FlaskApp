@@ -32,7 +32,7 @@ def getrecs(cname):
     print("Recskills:", recskill,flush=True)  #Debug
     print("Recrune:", recrune,flush=True)  #Debug
 
-    return recbuild[0]["id"],recskill[0]["id"],recrune[0]["id"]
+    return recbuild[0]["id"],recskill[0]["id"],recrune[0]["id"],recbuild[0]["weighted_win_ratio"]
     
 @app.route('/')
 def index():
@@ -63,10 +63,33 @@ def addrunepage():
         slot4 = request.form['slot4']
         slot5 = request.form['slot5']
         slot6 = request.form['slot6']
-        win_count = request.form['win_count']
-        LL_CRUD.create_rune_page(win_count,slot1,slot2,slot3,slot4,slot5,slot6,cn)
+        win_count = int(request.form['win_count'])
+        
+        updatecheck = LL_CRUD.read_rune_page(slot1,slot2,slot3,slot4,slot5,slot6,cn)
+        if len(updatecheck) == 0:
+            LL_CRUD.create_rune_page(win_count,slot1,slot2,slot3,slot4,slot5,slot6,cn)
+        else:
+            LL_CRUD.update_rune_page(win_count,slot1,slot2,slot3,slot4,slot5,slot6,cn)
         return render_template('managerunepage.html')
     return render_template('addrunepage.html')
+
+# @app.route('/editrunepage/<int:id>', methods = ('GET','POST'))
+# def editrunepage(id):
+#     query = """
+#                 SELECT cname, slot1, slot2, slot3, slot4, slot5, slot6, win_count FROM rune_page WHERE id = %s
+#             """
+#     results = LL_CRUD.run_query(query,id,True)
+#     cn = results[0]['cname']
+#     slot1 = results[0]['slot1']
+#     slot2 = results[0]['slot2']
+#     slot3 = results[0]['slot3']
+#     slot4 = results[0]['slot4']
+#     slot5 = results[0]['slot5']
+#     slot6 = results[0]['slot6']
+#     win_count = results[0]['win_count']
+#     if request.method == 'POST':
+#         return render_template('managerunepage.html')
+#     return render_template('addrunepage.html', edit = True, values = results)
 
 @app.route('/deleterunepage/<int:id>',methods=('POST',))
 def deleterunepage(id):
@@ -114,8 +137,13 @@ def addskillorders():
         skill1 = request.form['skill1']
         skill2 = request.form['skill2']
         skill3 = request.form['skill3']
-        win_count = request.form['win_count']
+        win_count = int(request.form['win_count'])
         LL_CRUD.create_skill_order(win_count,skill1,skill2,skill3,cn)
+        updatecheck = LL_CRUD.read_skill_order(skill1,skill2,skill3,cn)
+        if len(updatecheck) == 0:
+            LL_CRUD.create_skill_order(win_count,skill1,skill2,skill3,cn)
+        else:
+            LL_CRUD.update_skill_order(win_count,skill1,skill2,skill3,cn)
         return render_template('manageskillorder.html')
     return render_template('addskillorder.html')
 
@@ -164,8 +192,13 @@ def addbuild():
         item1 = request.form['item1']
         item2 = request.form['item2']
         item3 = request.form['item3']
-        win_count = request.form['win_count']
+        win_count = int(request.form['win_count'])
         LL_CRUD.create_build(win_count,item1,item2,item3,cn)
+        updatecheck = LL_CRUD.read_build(item1,item2,item3,cn)
+        if len(updatecheck) == 0:
+            LL_CRUD.read_build(item1,item2,item3,cn)
+        else:
+            LL_CRUD.update_build(win_count,item1,item2,item3,cn)
         return render_template('managebuilds.html')
     return render_template('addbuild.html')
 
@@ -190,6 +223,63 @@ def deletebuild(id):
 
     return render_template('managebuilds.html',champion = cname, builds = builds)
 
+@app.route('/championsuggest', methods = ['GET','POST'])
+def championsuggest():
+    if request.method == 'POST':
+        cn1 = request.form['champname1']
+        cn2 = request.form['champname2']
+        cn3 = request.form['champname3']
+        cnlist = [cn1,cn2,cn3]
+        heighest_weighted_win_ratio = 0
+        for i in range(3):
+            cn = cnlist[i]
+            #Checking if champion is a valid champ at all (exist in build table)
+            validchampquery = """
+                        SELECT EXISTS (SELECT cname FROM build WHERE cname = %s) AS result
+                        """
+            validchamp = LL_CRUD.run_query(validchampquery,cn,True)[0]['result']
+            print(validchamp, flush=True) #Debug
+            
+            #If champion is valid, check if its in the champion table, if not in champion table then add it along with it's recs
+            if validchamp:
+                existquery = """
+                SELECT cname FROM champion WHERE cname = %s
+                """
+                exist = [champ ['cname'] for champ in LL_CRUD.run_query(existquery,cn,True)]
+                print(exist, flush=True) #Debug 
+                if not exist:
+                    inserquery = """
+                    INSERT INTO champion (cname, recommend_build_id, recommended_skillorder_id, recommended_runepage_id) VALUES (%s,%s,%s,%s)
+                    """
+                    recbuild, recskill, recrune, weighted_win_ratio = getrecs(cn)
+                    print("weights: ", cn, weighted_win_ratio)
+                    LL_CRUD.run_query(inserquery,(cn,recbuild,recskill,recrune),False)
+                if weighted_win_ratio > heighest_weighted_win_ratio:
+                    heighest_weighted_win_ratio = weighted_win_ratio
+                    print("Inserted:", cn,recbuild,recskill,recrune,"into champion table",  flush=True) #Debug
+
+                    query = """
+                    SELECT DISTINCT cname FROM champion WHERE cname = %s
+                    """
+                    champname = LL_CRUD.run_query(query,cn,True)[0]['cname']
+                    print(champname,flush=True)
+
+                    buildquery ="""
+                                SELECT item1, item2, item3,skill1, skill2, skill3, slot1, slot2, slot3, slot4, slot5, slot6 
+                                FROM champion 
+                                LEFT JOIN build ON champion.recommend_build_id = build.id
+                                LEFT JOIN skill_order ON champion.recommended_skillorder_id = skill_order.id
+                                LEFT JOIN rune_page ON champion.recommended_runepage_id = rune_page.id 
+                                WHERE champion.cname = %s
+                                """
+                    build = LL_CRUD.run_query(buildquery,cn,True)
+            else:
+                return render_template("index.html") #Provide an error message of some sort
+        return render_template('champbuilds.html', champname = champname, build = build)
+        
+    else:
+        return render_template("index.html")
+    
 @app.route('/champion', methods = ['GET', 'POST'])
 def champsearch():
     if request.method =='POST':
