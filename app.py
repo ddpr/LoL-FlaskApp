@@ -138,7 +138,6 @@ def addskillorders():
         skill2 = request.form['skill2']
         skill3 = request.form['skill3']
         win_count = int(request.form['win_count'])
-        LL_CRUD.create_skill_order(win_count,skill1,skill2,skill3,cn)
         updatecheck = LL_CRUD.read_skill_order(skill1,skill2,skill3,cn)
         if len(updatecheck) == 0:
             LL_CRUD.create_skill_order(win_count,skill1,skill2,skill3,cn)
@@ -157,13 +156,14 @@ def deleteskillorder(id):
     skill2 = result[0]['skill2']
     skill3 = result[0]['skill3']
     cn = result[0]['cname']
-
+    #print("HLEOOOASDASDSa", cn, flush=True)
     LL_CRUD.delete_skill_order(skill1,skill2,skill3,cn)
 
     skillquery = """
                 SELECT id, skill1, skill2, skill3, win_count, game_count from skill_order WHERE cname = %s
                 """
     skills = LL_CRUD.run_query(skillquery,cn,True)
+   #print("HELLOOOOOOOOO",cn, flush=True)
 
     return render_template('manageskillorder.html',champion = cn, skills = skills)
 
@@ -193,10 +193,9 @@ def addbuild():
         item2 = request.form['item2']
         item3 = request.form['item3']
         win_count = int(request.form['win_count'])
-        LL_CRUD.create_build(win_count,item1,item2,item3,cn)
         updatecheck = LL_CRUD.read_build(item1,item2,item3,cn)
         if len(updatecheck) == 0:
-            LL_CRUD.read_build(item1,item2,item3,cn)
+            LL_CRUD.create_build(item1,item2,item3,cn)
         else:
             LL_CRUD.update_build(win_count,item1,item2,item3,cn)
         return render_template('managebuilds.html')
@@ -284,6 +283,7 @@ def championsuggest():
 @app.route('/champion', methods = ['GET', 'POST'])
 def champsearch():
     if request.method =='POST':
+       #newtime = datetime.datetime.now()
         cn = request.form['champname']
 
         #Checking if champion is a valid champ at all (exist in build table)
@@ -299,15 +299,16 @@ def champsearch():
             SELECT cname FROM champion WHERE cname = %s
             """
             exist = [champ ['cname'] for champ in LL_CRUD.run_query(existquery,cn,True)]
-            print(exist, flush=True) #Debug 
+            print(exist, flush=True) #Debug
+            recbuild, recskill, recrune, wwwinraio = getrecs(cn)
             if not exist:
                 inserquery = """
                 INSERT INTO champion (cname, recommend_build_id, recommended_skillorder_id, recommended_runepage_id) VALUES (%s,%s,%s,%s)
                 """
-                recbuild, recskill, recrune = getrecs(cn)
                 LL_CRUD.run_query(inserquery,(cn,recbuild,recskill,recrune),False)
                 print("Inserted:", cn,recbuild,recskill,recrune,"into champion table",  flush=True) #Debug
-
+            # if newtime > currenttime:
+            #         LL_CRUD.update_champion(cn,recbuild,recskill,recrune)
             query = """
             SELECT DISTINCT cname FROM champion WHERE cname = %s
             """
@@ -332,4 +333,5 @@ def champsearch():
         return render_template("index.html")
 
 if __name__ == '__main__':
+    #currenttime = datetime.datetime.now()
     app.run(debug=True)
