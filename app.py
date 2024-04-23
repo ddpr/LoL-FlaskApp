@@ -10,17 +10,17 @@ DATABASE_NAME = "LL_database"
 
 def getrecs(cname):
     buildquery = """
-                SELECT id, (win_count/game_count) as win_ratio, (win_count*(win_count/game_count)) as weighted_win_ratio 
+                SELECT id, (win_count/game_count) as win_ratio, (win_count/(game_count + 15)) as weighted_win_ratio 
                 FROM build WHERE cname = %s 
                 ORDER BY weighted_win_ratio DESC LIMIT 1
                 """
     runequery = """
-                SELECT id, (win_count/game_count) as win_ratio, (win_count*(win_count/game_count)) as weighted_win_ratio 
+                SELECT id, (win_count/game_count) as win_ratio, (win_count/(game_count + 15)) as weighted_win_ratio 
                 FROM rune_page WHERE cname = %s 
                 ORDER BY weighted_win_ratio DESC LIMIT 1
                 """
     skillquery = """
-                SELECT id, (win_count/game_count) as win_ratio, (win_count*(win_count/game_count)) as weighted_win_ratio 
+                SELECT id, (win_count/game_count) as win_ratio, (win_count/(game_count + 15)) as weighted_win_ratio 
                 FROM skill_order WHERE cname = %s 
                 ORDER BY weighted_win_ratio DESC LIMIT 1
                 """
@@ -247,13 +247,14 @@ def championsuggest():
                 """
                 exist = [champ ['cname'] for champ in LL_CRUD.run_query(existquery,cn,True)]
                 print(exist, flush=True) #Debug 
+                recbuild, recskill, recrune, weighted_win_ratio = getrecs(cn)
+                print("weights: ", cn, weighted_win_ratio)
                 if not exist:
                     inserquery = """
                     INSERT INTO champion (cname, recommend_build_id, recommended_skillorder_id, recommended_runepage_id) VALUES (%s,%s,%s,%s)
                     """
-                    recbuild, recskill, recrune, weighted_win_ratio = getrecs(cn)
-                    print("weights: ", cn, weighted_win_ratio)
                     LL_CRUD.run_query(inserquery,(cn,recbuild,recskill,recrune),False)
+
                 if weighted_win_ratio > heighest_weighted_win_ratio:
                     heighest_weighted_win_ratio = weighted_win_ratio
                     print("Inserted:", cn,recbuild,recskill,recrune,"into champion table",  flush=True) #Debug
