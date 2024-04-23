@@ -3,11 +3,60 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/list.css">
+    {%if champion%}
+    <title>Manage {{champion}} Rune Pages</title>
+    {%else%}
     <title>Manage Rune Pages</title>
+    {%endif%}
   </head>
   <body>
     <main>
-        <h1>Manage Rune Pages</h1>  
+        <a href="/">Home</a>
+        <h1>Manage Rune Page Entries</h1> 
+        <br>
+        <form action="/addrunepage" method ="get" enctype="text/plain">
+          <input type="submit" value = "Add New Rune Page Entry">
+        </form>
+        <h2>Search Rune Pages By Champions</h2> 
+        <form action ="/searchrunepages" method = "post" enctype="multipart/form-data">
+            <input type = "text" name ="champname">
+            <input type ="submit" value = "Search">
+        {%if champion%}
+        <h3>Entries for {{champion}}</h3>
+        <table>
+          <th>Rune Page ID</th>
+          <th>Slot 1</th>
+          <th>Slot 2</th>
+          <th>Slot 3</th>
+          <th>Slot 4</th>
+          <th>Slot 5</th>
+          <th>Slot 6</th>
+          <th>Wins</th>
+          <th>Total Games</th>
+          <th>Actions</th>
+            {%for entry in skills%}
+            <tr>
+              <td>{{entry.id}}</td>
+              <td>{{entry.slot1}}</td>
+              <td>{{entry.slot2}}</td>
+              <td>{{entry.slot3}}</td>
+              <td>{{entry.slot4}}</td>
+              <td>{{entry.slot5}}</td>
+              <td>{{entry.slot6}}</td>
+              <td>{{entry.win_count}}</td>
+              <td>{{entry.game_count}}</td>
+              <td>
+                <a href="/editrunepages/{{ entry.id }}">Edit</a>
+                <form action="/deleterunepages/{{ entry.id }}" method="post" style="display: inline;">
+                    <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this rune page entry?');">
+                </form>
+            </td>
+              </td>
+            </tr>
+            {%endfor%}
+          {%endif%}
+        </table>
     </main>
   </body>
 </html>

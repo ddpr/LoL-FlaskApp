@@ -42,9 +42,52 @@ def index():
 def editrunes():
     return render_template("managerunepage.html")
 
-@app.route('/editskills')
-def editskills():
+@app.route('/manageskillorders')
+def manageskillorders():
     return render_template("manageskillorder.html")
+
+@app.route('/searchskillorders', methods = ['GET','POST'])
+def searchskillorders():
+    cn = request.form['champname']
+    skillquery = """
+                SELECT id, skill1, skill2, skill3, win_count, game_count from skill_order WHERE cname = %s
+                """
+    skills = LL_CRUD.run_query(skillquery,cn,True)
+    return render_template('manageskillorder.html',champion = cn, skills=skills)
+
+@app.route('/addskillorder', methods = ('GET', 'POST'))
+def addskillorders():
+    if request.method == 'POST':
+        cn = request.form['champname']
+        skill1 = request.form['skill1']
+        skill2 = request.form['skill2']
+        skill3 = request.form['skill3']
+        win_count = request.form['win_count']
+        LL_CRUD.create_skill_order(win_count,skill1,skill2,skill3,cn)
+        return render_template('manageskillorder.html')
+    return render_template('addskillorder.html')
+
+@app.route('/deleteskillorder/<int:id>',methods=('POST',))
+def deleteskillorder(id):
+    query = """
+            SELECT skill1, skill2, skill3,  win_count, cname FROM skill_order WHERE id = %s
+            """
+    result = LL_CRUD.run_query(query,id,True)
+    skill1 = result[0]['skill1']
+    skill2 = result[0]['skill2']
+    skill3 = result[0]['skill3']
+    cn = result[0]['cname']
+
+    LL_CRUD.delete_skill_order(skill1,skill2,skill3,cn)
+
+    skillquery = """
+                SELECT id, skill1, skill2, skill3, win_count, game_count from skill_order WHERE cname = %s
+                """
+    skills = LL_CRUD.run_query(skillquery,cn,True)
+
+    return render_template('manageskillorder.html',champion = cn, skills = skills)
+
+
 
 
 ###Endpoints for managing builds (CRUD Operations)

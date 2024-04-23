@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Skill Order Entry</title>
+</head>
+<body>
+    <h1>Add Skill Order Entry</h1>
+    <form action="/addskillorder" method="post">
+        <label for="champname">Champion:</label><br>
+        <input type="text" id="champname" name="champname" required><br>
+
+        <h3>Skill Level Priority</h3>
+        <label for="skill1">First Priority:</label><br>
+        <input type="text" id="skill1" name="skill1" required><br>
+
+        <label for="skill2">Second Priority:</label><br>
+        <input type="text" id="skill2" name="skill2" required><br>
+
+        <label for="skill3">Third Priority:</label><br>
+        <input type="text" id="skill3" name="skill3" required><br>
+
+        <label for="win_count">Win Count:</label><br>
+        <input type="text" id="win_count" name="win_count" required><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
