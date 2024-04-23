@@ -35,7 +35,7 @@
           <th>Wins</th>
           <th>Total Games</th>
           <th>Actions</th>
-            {%for entry in skills%}
+            {%for entry in runes%}
             <tr>
               <td>{{entry.id}}</td>
               <td>{{entry.slot1}}</td>
@@ -48,7 +48,7 @@
               <td>{{entry.game_count}}</td>
               <td>
                 <a href="/editrunepages/{{ entry.id }}">Edit</a>
-                <form action="/deleterunepages/{{ entry.id }}" method="post" style="display: inline;">
+                <form action="/deleterunepage/{{ entry.id }}" method="post" style="display: inline;">
                     <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this rune page entry?');">
                 </form>
             </td>

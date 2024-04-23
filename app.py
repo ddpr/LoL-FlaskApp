@@ -38,9 +38,61 @@ def getrecs(cname):
 def index():
     return render_template("index.html")
 
-@app.route('/editrunes')
-def editrunes():
+###Endpoints for managing rune pages (CRUD Operations)
+
+@app.route('/managerunepages')
+def managerunepages():
     return render_template("managerunepage.html")
+
+@app.route('/searchrunepages', methods = ['GET','POST'])
+def searchrunepages():
+    cn = request.form['champname']
+    runequery = """
+                SELECT id, slot1, slot2, slot3, slot4, slot5, slot6, win_count, game_count from rune_page WHERE cname = %s
+                """
+    runes = LL_CRUD.run_query(runequery,cn,True)
+    return render_template('managerunepage.html',champion = cn, runes=runes)
+
+@app.route('/addrunepage', methods = ('GET', 'POST'))
+def addrunepage():
+    if request.method == 'POST':
+        cn = request.form['champname']
+        slot1 = request.form['slot1']
+        slot2 = request.form['slot2']
+        slot3 = request.form['slot3']
+        slot4 = request.form['slot4']
+        slot5 = request.form['slot5']
+        slot6 = request.form['slot6']
+        win_count = request.form['win_count']
+        LL_CRUD.create_rune_page(win_count,slot1,slot2,slot3,slot4,slot5,slot6,cn)
+        return render_template('managerunepage.html')
+    return render_template('addrunepage.html')
+
+@app.route('/deleterunepage/<int:id>',methods=('POST',))
+def deleterunepage(id):
+    query = """
+            SELECT slot1, slot2, slot3, slot4, slot5, slot6, cname FROM rune_page WHERE id = %s
+            """
+    result = LL_CRUD.run_query(query,id,True)
+    
+    slot1 = result[0]['slot1']
+    slot2 = result[0]['slot2']
+    slot3 = result[0]['slot3']
+    slot4 = result[0]['slot4']
+    slot5 = result[0]['slot5']
+    slot6 = result[0]['slot6']
+    cn = result[0]['cname']
+    print("result:", result,flush=True)
+    LL_CRUD.delete_rune_page(slot1,slot2,slot3,slot4,slot5,slot6,cn)
+
+    runequery = """
+                SELECT id, slot1, slot2, slot3, slot4, slot5, slot6, win_count, game_count from rune_page WHERE cname = %s
+                """
+    runes = LL_CRUD.run_query(runequery,cn,True)
+    return render_template('managerunepage.html',champion = cn, runes = runes)
+
+
+###Endpoints for managing skill orders (CRUD Operations)
 
 @app.route('/manageskillorders')
 def manageskillorders():
