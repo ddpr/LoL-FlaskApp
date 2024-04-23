@@ -41,7 +41,6 @@
               <td>{{entry.win_count}}</td>
               <td>{{entry.game_count}}</td>
               <td>
-                <a href="/editskillorder/{{ entry.id }}">Edit</a>
                 <form action="/deleteskillorder/{{ entry.id }}" method="post" style="display: inline;">
                     <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this skill order entry?');">
                 </form>

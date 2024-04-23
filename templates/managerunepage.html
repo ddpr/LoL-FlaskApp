@@ -47,9 +47,6 @@
               <td>{{entry.win_count}}</td>
               <td>{{entry.game_count}}</td>
               <td>
-                <form action="/editrunepage/{{ entry.id }}" method = "get" style="display: inline;">
-                  <input type ="submit" value ="Edit">
-                  </form>
                 <form action="/deleterunepage/{{ entry.id }}" method="post" style="display: inline;">
                     <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this rune page entry?');">
                 </form>
